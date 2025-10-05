@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shooter Deluxe Expanded</title>
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background-color: #000;
+      color: #f2f2f2;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      position: relative;
+    }
+
+    canvas#stars {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -1;
+      background: radial-gradient(circle at bottom, #020211 0%, #000 100%);
+    }
+
+    header.hero {
+      text-align: center;
+      padding: 120px 20px;
+      animation: fadeIn 1.5s ease-out;
+    }
+
+    header.hero h1 {
+      font-family: 'Russo One', sans-serif;
+      font-size: 3rem;
+      color: #00bfff;
+      text-shadow: 0 0 15px #00bfff;
+      animation: glow 2s infinite alternate;
+    }
+
+    header.hero p {
+      font-size: 1.2rem;
+      color: #ccc;
+      margin-top: 10px;
+      animation: fadeIn 2s ease-out;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #00bfff;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 20px;
+      transition: 0.3s all;
+    }
+
+    .btn:hover {
+      background: #0099cc;
+      box-shadow: 0 0 25px #00bfff;
+      transform: translateY(-4px);
+    }
+
+    main.container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 40px 20px;
+    }
+
+    section {
+      margin-bottom: 60px;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: 1s all;
+    }
+
+    section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    h2 {
+      color: #00bfff;
+      font-family: 'Russo One', sans-serif;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px #00bfff;
+    }
+
+    p, li {
+      color: #ddd;
+      line-height: 1.6;
+    }
+
+    ul { list-style-type: square; padding-left: 20px; }
+
+    .card {
+      background: rgba(20, 20, 40, 0.8);
+      border-radius: 12px;
+      overflow: hidden;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 0 25px rgba(0, 191, 255, 0.4);
+    }
+
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .download {
+      text-align: center;
+      background: rgba(10, 20, 40, 0.7);
+      padding: 50px 20px;
+      border-radius: 12px;
+      transition: transform 0.5s, box-shadow 0.5s;
+    }
+
+    .download:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 0 25px rgba(0, 191, 255, 0.4);
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #888;
+      font-size: 0.9rem;
+      border-top: 1px solid #222;
+    }
+
+    @keyframes glow {
+      0% { text-shadow: 0 0 10px #00bfff; }
+      100% { text-shadow: 0 0 25px #00ffff; }
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(20px);}
+      100% { opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="stars"></canvas>
+
+  <header class="hero">
+    <h1>Shooter Deluxe Expanded</h1>
+    <p>Динамічна аркада на Python & Pygame</p>
+    <a href="#download" class="btn">Завантажити гру</a>
+  </header>
+
+  <main class="container">
+    <section>
+      <h2>Мета гри</h2>
+      <p>Виживай якнайдовше, знищуючи ворогів і босів, збирай бонуси та досягнення — доведи, що ти найкращий стрілець галактики!</p>
+    </section>
+
+    <section>
+      <h2>Механіка</h2>
+      <ul>
+        <li>Керування кораблем за допомогою клавіш</li>
+        <li>Комбо-атаки та стрільба</li>
+        <li>Битви з босами</li>
+        <li>Підсилення, пауер-апи та бонуси</li>
+        <li>Досягнення, рекорди, таблиця лідерів</li>
+      </ul>
+    </section>
+
+    <section id="download" class="download">
+      <h2>Завантажити гру</h2>
+      <p>Доступно для Windows / Linux(доступно якщо завантажити wine)</p>
+      <a href="https://drive.google.com/file/d/1n22gbqyc2qdhex92hqnt7MnHiSyibGeJ/view?usp=sharing" target="_blank" class="btn">⬇ Завантажити EXE</a>
+
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 BrixDash Deluxe Expanded. Всі права захищені.</p>
+  </footer>
+
+  <script>
+    // ⭐ Анімація космосу
+    const canvas = document.getElementById("stars");
+    const ctx = canvas.getContext("2d");
+    let stars = [];
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      stars = Array.from({length: 200}, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.8,
+        s: Math.random() * 0.6 + 0.2
+      }));
+    }
+
+    function drawStars() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle = "white";
+      for(let star of stars){
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, Math.PI*2);
+        ctx.fill();
+        star.y += star.s;
+        if(star.y > canvas.height) star.y = 0;
+      }
+      requestAnimationFrame(drawStars);
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+    drawStars();
+
+    // ⭐ Плавне появлення секцій
+    const sections = document.querySelectorAll('section');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('visible');
+        }
+      });
+    }, {threshold: 0.2});
+    sections.forEach(section => observer.observe(section));
+  </script>
+</body>
+</html>
