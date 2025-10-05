@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shooter Deluxe Expanded</title>
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background-color: #000;
+      color: #f2f2f2;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      position: relative;
+    }
+
+    canvas#stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: radial-gradient(circle at bottom, #020211 0%, #000 100%);
+    }
+
+    header.hero {
+      text-align: center;
+      padding: 120px 20px;
+    }
+
+    header.hero h1 {
+      font-family: 'Russo One', sans-serif;
+      font-size: 3rem;
+      color: #00bfff;
+      text-shadow: 0 0 15px #00bfff;
+    }
+
+    header.hero p {
+      font-size: 1.2rem;
+      color: #ccc;
+      margin-top: 10px;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #00bfff;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 20px;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #0099cc;
+      box-shadow: 0 0 20px #00bfff;
+    }
+
+    main.container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 40px 20px;
+    }
+
+    section {
+      margin-bottom: 60px;
+    }
+
+    h2 {
+      color: #00bfff;
+      font-family: 'Russo One', sans-serif;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px #00bfff;
+    }
+
+    p, li {
+      color: #ddd;
+      line-height: 1.6;
+    }
+
+    ul {
+      list-style-type: square;
+      padding-left: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: rgba(20, 20, 40, 0.8);
+      border-radius: 12px;
+      overflow: hidden;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 0 25px rgba(0, 191, 255, 0.4);
+    }
+
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .download {
+      text-align: center;
+      background: rgba(10, 20, 40, 0.7);
+      padding: 50px 20px;
+      border-radius: 12px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #888;
+      font-size: 0.9rem;
+      border-top: 1px solid #222;
+    }
+
+    /* 💬 Чат */
+    #chat-box {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 320px;
+      background: rgba(10, 10, 20, 0.95);
+      border: 2px solid #00bfff;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #00bfff55;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      font-size: 14px;
+      z-index: 9999;
+      backdrop-filter: blur(8px);
+    }
+
+    #chat-header {
+      background: #00bfff;
+      color: #fff;
+      padding: 10px;
+      font-weight: bold;
+      text-align: center;
+      cursor: default;
+    }
+
+    #chat-messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      max-height: 250px;
+      scrollbar-width: thin;
+      scrollbar-color: #00bfff #111;
+    }
+
+    .msg {
+      margin-bottom: 8px;
+      word-wrap: break-word;
+    }
+
+    .msg.user {
+      text-align: right;
+      color: #00ffea;
+    }
+
+    .msg.admin {
+      text-align: left;
+      color: #fff;
+    }
+
+    #chat-input {
+      display: flex;
+      border-top: 1px solid #00bfff;
+      background: #0a0a12;
+    }
+
+    #chat-input input {
+      flex: 1;
+      padding: 10px;
+      background: transparent;
+      border: none;
+      color: #fff;
+      outline: none;
+      font-size: 14px;
+    }
+
+    #chat-input button {
+      background: #00bfff;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: bold;
+    }
+
+    #chat-input button:hover {
+      background: #0099cc;
+    }
+
+    @media (max-width: 600px) {
+      #chat-box {
+        width: 90%;
+        right: 5%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="stars"></canvas>
+
+  <header class="hero">
+    <h1>Shooter Deluxe Expanded</h1>
+    <p>Динамічна аркада на Python & Pygame</p>
+    <a href="#download" class="btn">Завантажити гру</a>
+  </header>
+
+  <main class="container">
+    <section>
+      <h2>Мета гри</h2>
+      <p>Виживай якнайдовше, знищуючи ворогів і босів, збирай бонуси та досягнення — доведи, що ти найкращий стрілець галактики!</p>
+    </section>
+
+    <section>
+      <h2>Механіка</h2>
+      <ul>
+        <li>Керування кораблем за допомогою клавіш</li>
+        <li>Комбо-атаки та стрільба</li>
+        <li>Битви з босами</li>
+        <li>Підсилення, пауер-апи та бонуси</li>
+        <li>Досягнення, рекорди, таблиця лідерів</li>
+      </ul>
+    </section>
+
+    <section id="download" class="download">
+      <h2>Завантажити гру</h2>
+      <p>Доступно для Windows / Linux</p>
+      <a href="shooter_deluxe_expanded.zip" class="btn">⬇ Завантажити ZIP</a>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Shooter Deluxe Expanded. Всі права захищені.</p>
+  </footer>
+
+  <!-- 💬 Чат -->
+  <div id="chat-box">
+    <div id="chat-header">💬 Чат із Admin bulkaPRIME</div>
+    <div id="chat-messages">
+      <div class="msg admin">Привіт! Я bulkaPRIME. Чим допомогти? 🚀</div>
+    </div>
+    <div id="chat-input">
+      <input type="text" id="userMsg" placeholder="Напиши повідомлення...">
+      <button id="sendBtn">▶</button>
+    </div>
+  </div>
+
+  <script>
+    // ⭐ Анімація космосу
+    const canvas = document.getElementById("stars");
+    const ctx = canvas.getContext("2d");
+    let stars = [];
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      stars = Array.from({length: 150}, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.8,
+        s: Math.random() * 0.6 + 0.2
+      }));
+    }
+
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "white";
+      for (let star of stars) {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+        ctx.fill();
+        star.y += star.s;
+        if (star.y > canvas.height) star.y = 0;
+      }
+      requestAnimationFrame(drawStars);
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+    drawStars();
+
+    // 💬 Чат
+    const chatMessages = document.getElementById("chat-messages");
+    const sendBtn = document.getElementById("sendBtn");
+    const userMsg = document.getElementById("userMsg");
+
+    function addMsg(text, sender) {
+      const div = document.createElement("div");
+      div.className = "msg " + sender;
+      div.textContent = text;
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    async function sendMessage() {
+  const text = userMsg.value.trim();
+  if (!text) return;
+  addMsg(text, "user");
+  userMsg.value = "";
+
+  await fetch("http://26.208.66.49:5000/send_message", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: text })
+  });
+}
+
+async function updateChat() {
+  const res = await fetch("http://26.208.66.49:5000/get_messages");
+  const data = await res.json();
+  chatMessages.innerHTML = "";
+  data.forEach(msg => addMsg(msg.text, msg.sender));
+}
+
+setInterval(updateChat, 2000);
+
+    sendBtn.onclick = sendMessage;
+    userMsg.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+</body>
+</html>

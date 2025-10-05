@@ -1,0 +1,129 @@
+/* Базові стилі */
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background: #ffffff;
+    color: #222;
+    line-height: 1.6;
+  }
+  
+  /* Hero */
+  header.hero {
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    color: white;
+    text-align: center;
+    padding: 3rem 1rem;
+  }
+  
+  header.hero h1 {
+    margin: 0;
+    font-size: 2.8rem;
+  }
+  
+  header.hero p {
+    margin: 0.5rem 0 1.5rem;
+    font-size: 1.2rem;
+  }
+  
+  header.hero .btn {
+    background: white;
+    color: #3b82f6;
+  }
+  
+  /* Контейнер */
+  .container {
+    width: 90%;
+    max-width: 1100px;
+    margin: auto;
+    padding: 2rem 0;
+  }
+  
+  /* Заголовки секцій */
+  h2 {
+    margin-bottom: 1rem;
+    color: #3b82f6;
+    border-left: 4px solid #06b6d4;
+    padding-left: 0.5rem;
+  }
+  
+  /* Списки */
+  ul {
+    list-style: square inside;
+    padding-left: 0;
+    margin: 0.5rem 0 1.5rem;
+  }
+  
+  /* Сітка */
+  .grid {
+    display: grid;
+    gap: 1.5rem;
+  }
+  
+  @media(min-width: 768px) {
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  
+  .grid img {
+    width: 100%;
+    border-radius: 10px;
+  }
+  
+  /* Картки */
+  .card {
+    background: #f9fafb;
+    padding: 1rem;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card h3 {
+    margin: 0.5rem 0;
+    color: #111;
+  }
+  
+  /* Завантаження */
+  .download {
+    text-align: center;
+    padding: 2rem;
+    background: #f0f9ff;
+    border-radius: 10px;
+  }
+  
+  .download h2 {
+    color: #0ea5e9;
+  }
+  
+  /* Кнопка */
+  .btn {
+    display: inline-block;
+    background: #3b82f6;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.2s ease;
+  }
+  
+  .btn:hover {
+    background: #1d4ed8;
+  }
+  
+  /* Футер */
+  footer {
+    text-align: center;
+    background: #111827;
+    color: #d1d5db;
+    padding: 1rem;
+    margin-top: 2rem;
+    font-size: 0.9rem;
+  }
+  
