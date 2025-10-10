@@ -3,62 +3,64 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>BrixDash Deluxe — Glow Edition</title>
+<title>BrixDash HyperGlow</title>
 <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --g1: #00bfff;
-  --g2: #7f00ff;
-  --g-angle: 135deg;
-  --neon: #00ffff;
+:root{
+  --g1:#00bfff;
+  --g2:#7f00ff;
+  --g-angle:135deg;
 }
 
-/* Скидання */
-*{margin:0;padding:0;box-sizing:border-box}
+/* Глобальний стиль */
+*{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;scroll-behavior:smooth;}
 body{
   font-family:'Open Sans',sans-serif;
   color:#eaf6ff;
   background:linear-gradient(var(--g-angle),var(--g1),var(--g2));
   background-size:400% 400%;
-  animation:moveGradient 14s ease infinite;
+  animation:bgShift 10s ease infinite;
   overflow-x:hidden;
-  transition:background 0.6s ease;
+  transition:background 1s ease;
 }
-@keyframes moveGradient {
+@keyframes bgShift{
   0%{background-position:0% 50%;}
   50%{background-position:100% 50%;}
   100%{background-position:0% 50%;}
 }
 
-/* Неонова рамка */
-.neon-border{
-  border:1px solid rgba(255,255,255,0.15);
-  box-shadow:0 0 15px rgba(255,255,255,0.1), inset 0 0 15px rgba(255,255,255,0.08);
+/* Анімоване світіння */
+@keyframes glowColor {
+  0% { filter: drop-shadow(0 0 8px #00bfff); color:#00bfff; }
+  25% { filter: drop-shadow(0 0 10px #ff00ff); color:#ff00ff; }
+  50% { filter: drop-shadow(0 0 8px #00ffcc); color:#00ffcc; }
+  75% { filter: drop-shadow(0 0 10px #ffcc00); color:#ffcc00; }
+  100% { filter: drop-shadow(0 0 8px #00bfff); color:#00bfff; }
 }
 
 /* Навігація */
 nav{
   position:fixed;
   top:12px;left:50%;transform:translateX(-50%);
-  background:rgba(0,0,0,0.45);
-  backdrop-filter:blur(10px);
+  display:flex;gap:10px;
+  background:rgba(0,0,0,0.5);
+  backdrop-filter:blur(12px);
   border-radius:999px;
   padding:8px 14px;
-  display:flex;gap:10px;
   border:1px solid rgba(255,255,255,0.1);
-  box-shadow:0 0 25px rgba(0,255,255,0.3);
+  box-shadow:0 0 25px rgba(255,255,255,0.2);
   z-index:100;
 }
 nav a{
   color:#fff;text-decoration:none;padding:10px 18px;
   font-weight:600;border-radius:999px;
-  transition:0.3s;text-shadow:0 0 10px var(--neon);
+  transition:0.3s;text-shadow:0 0 8px #00ffff;
 }
 nav a:hover,nav a.active{
   background:rgba(255,255,255,0.9);
   color:#000;
-  box-shadow:0 0 25px var(--neon);
+  box-shadow:0 0 25px #00ffff;
 }
 
 /* Кнопка градієнта */
@@ -66,22 +68,18 @@ nav a:hover,nav a.active{
   position:fixed;
   right:20px;top:20px;
   background:rgba(0,0,0,0.5);
-  color:#0ff;
-  border:1px solid rgba(0,255,255,0.4);
-  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.3);
+  border-radius:12px;
   padding:10px 16px;
+  color:#fff;
   cursor:pointer;
   font-weight:700;
   text-shadow:0 0 8px #00ffff;
-  box-shadow:0 0 25px rgba(0,255,255,0.3);
+  animation:glowColor 6s linear infinite;
   z-index:120;
-  transition:0.3s;
+  transition:0.4s;
 }
-#toggleGradient:hover{
-  background:rgba(0,255,255,0.2);
-  transform:scale(1.05);
-  box-shadow:0 0 35px rgba(0,255,255,0.5);
-}
+#toggleGradient:hover{transform:scale(1.05);}
 
 /* Панель градієнта */
 .controls{
@@ -90,34 +88,23 @@ nav a:hover,nav a.active{
   padding:14px;border-radius:14px;
   backdrop-filter:blur(10px);
   border:1px solid rgba(255,255,255,0.1);
-  box-shadow:0 0 25px rgba(0,255,255,0.25);
+  box-shadow:0 0 25px rgba(255,255,255,0.3);
   color:#fff;z-index:110;
   transition:all 0.6s ease;
 }
-.controls.hidden{
-  opacity:0;transform:translateY(-30px);
-  pointer-events:none;
-}
-.controls h4{margin-bottom:10px;text-shadow:0 0 12px var(--neon);}
+.controls.hidden{opacity:0;transform:translateY(-20px);pointer-events:none;}
+.controls h4{margin-bottom:8px;animation:glowColor 8s linear infinite;}
 .row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
 input[type=color]{width:60px;height:36px;border:none;border-radius:8px;cursor:pointer;}
 input[type=range]{flex:1;}
 .btn-mini{
   background:rgba(0,255,255,0.15);
   color:#0ff;
-  border:none;
-  border-radius:6px;
-  padding:8px 10px;
-  cursor:pointer;
-  font-weight:600;
-  box-shadow:0 0 10px rgba(0,255,255,0.3);
+  border:none;border-radius:6px;
+  padding:8px 10px;cursor:pointer;font-weight:600;
   transition:0.3s;
 }
-.btn-mini:hover{
-  background:rgba(0,255,255,0.25);
-  transform:translateY(-2px);
-  box-shadow:0 0 20px rgba(0,255,255,0.4);
-}
+.btn-mini:hover{background:rgba(0,255,255,0.25);transform:translateY(-2px);}
 
 /* Заголовок */
 header.hero{
@@ -126,91 +113,81 @@ header.hero{
 }
 header.hero h1{
   font-family:'Russo One',sans-serif;
-  font-size:3rem;
-  color:#fff;
-  text-shadow:0 0 25px var(--neon),0 0 60px var(--g1);
-  animation:neonGlow 2s ease-in-out infinite alternate;
-}
-@keyframes neonGlow{
-  from{text-shadow:0 0 10px var(--g1),0 0 30px var(--g2);}
-  to{text-shadow:0 0 30px var(--g2),0 0 60px var(--g1);}
+  font-size:3.2rem;
+  animation:glowColor 6s linear infinite;
+  text-shadow:0 0 25px #fff;
 }
 header.hero p{
-  color:#dff;
   font-size:1.2rem;
   margin-top:10px;
-  text-shadow:0 0 10px rgba(255,255,255,0.5);
+  color:#fff;
+  text-shadow:0 0 10px rgba(255,255,255,0.6);
+  animation:pulseText 3s ease-in-out infinite alternate;
+}
+@keyframes pulseText{
+  from{text-shadow:0 0 5px #fff,0 0 10px #00ffff;}
+  to{text-shadow:0 0 15px #fff,0 0 25px #ff00ff;}
 }
 
 /* Контент */
-main.container{
-  max-width:1100px;
-  margin:60px auto;
-  padding:0 20px 100px;
-}
-section{
-  margin-bottom:60px;
-  opacity:0;transform:translateY(25px);
-  transition:all 0.8s ease;
-}
+main.container{max-width:1100px;margin:60px auto;padding:0 20px 100px;}
+section{margin-bottom:60px;opacity:0;transform:translateY(25px);transition:all 0.8s ease;}
 section.visible{opacity:1;transform:none;}
 h2{
   font-family:'Russo One',sans-serif;
-  color:#fff;
-  text-shadow:0 0 15px var(--neon);
+  font-size:2rem;
+  animation:glowColor 7s linear infinite;
   margin-bottom:20px;
 }
-p,li{color:#e6faff;line-height:1.6}
 
 /* Картки */
 .card{
-  background:rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.1);
   border-radius:14px;
-  padding:20px;
-  margin-bottom:14px;
+  padding:22px;margin-bottom:14px;
   text-align:center;
-  box-shadow:0 0 15px rgba(255,255,255,0.15);
-  transition:all 0.4s ease;
-  border:1px solid rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.2);
+  transition:0.4s;
+  box-shadow:0 0 20px rgba(255,255,255,0.2);
 }
 .card:hover{
-  transform:translateY(-8px) scale(1.02);
-  box-shadow:0 0 25px var(--neon),0 0 60px rgba(0,255,255,0.3);
+  transform:translateY(-8px) scale(1.03);
+  box-shadow:0 0 30px #00ffff,0 0 60px #ff00ff;
 }
 
 /* Завантаження */
 .download{
   text-align:center;
-  background:rgba(0,0,0,0.4);
-  padding:50px;
-  border-radius:14px;
-  box-shadow:0 0 30px rgba(255,255,255,0.15);
+  background:rgba(0,0,0,0.5);
+  padding:50px;border-radius:14px;
+  box-shadow:0 0 30px rgba(255,255,255,0.2);
 }
 .btn{
   display:inline-block;
   background:linear-gradient(90deg,var(--g1),var(--g2));
+  background-size:200% 200%;
   color:#fff;
   font-weight:700;
   padding:14px 24px;
   border-radius:10px;
   text-decoration:none;
-  text-shadow:0 0 10px rgba(255,255,255,0.6);
-  box-shadow:0 0 20px rgba(0,255,255,0.3);
+  animation:btnGlow 6s linear infinite;
   transition:0.3s;
 }
+@keyframes btnGlow{
+  0%{box-shadow:0 0 15px #00ffff;filter:hue-rotate(0deg);}
+  50%{box-shadow:0 0 35px #ff00ff;filter:hue-rotate(180deg);}
+  100%{box-shadow:0 0 15px #00ffff;filter:hue-rotate(360deg);}
+}
 .btn:hover{
-  transform:translateY(-4px) scale(1.05);
-  box-shadow:0 0 30px var(--neon),0 0 60px var(--g2);
+  transform:scale(1.05);
 }
 
 /* Футер */
 footer{
-  text-align:center;
-  padding:30px;
-  color:#bcd;
-  font-size:0.9rem;
+  text-align:center;padding:30px;color:#ccc;font-size:0.9rem;
   border-top:1px solid rgba(255,255,255,0.1);
-  text-shadow:0 0 8px rgba(255,255,255,0.4);
+  animation:glowColor 10s linear infinite;
 }
 </style>
 </head>
@@ -236,7 +213,7 @@ footer{
 </div>
 
 <nav>
-  <a data-target="goal" class="active">Мета гри</a>
+  <a data-target="goal" class="active">Мета</a>
   <a data-target="mechanics">Механіка</a>
   <a data-target="levels">Рівні</a>
   <a data-target="bonuses">Бонуси</a>
@@ -244,35 +221,35 @@ footer{
 </nav>
 
 <header class="hero">
-  <h1>BrixDash Deluxe</h1>
-  <p>Проходь всі рівні, збирай бонуси та досягнення!</p>
+  <h1>BrixDash HyperGlow</h1>
+  <p>Неон. Швидкість. Реакція. Енергія гри — у кожному світловому імпульсі ⚡</p>
 </header>
 
 <main class="container">
   <section id="goal" class="visible">
-    <h2>Мета гри</h2>
-    <p>Пройди всі рівні, уникай пасток, збирай бонуси — відчуй енергію неону!</p>
+    <h2>🎯 Мета гри</h2>
+    <p>Подолай усі рівні, уникай пасток і збирай бонуси, щоб відкрити повну силу неонового світу!</p>
   </section>
 
   <section id="mechanics">
-    <h2>Механіка</h2>
-    <div class="card">🎯 Точний таймінг і стрибки</div>
-    <div class="card">⚡ Перешкоди, швидкість і реакція</div>
-    <div class="card">💎 Збирай бонуси та відкривай секрети</div>
+    <h2>⚙️ Механіка</h2>
+    <div class="card">Точний таймінг та стрибки</div>
+    <div class="card">Уникай пасток і рухайся вперед</div>
+    <div class="card">Збирай енергію для неонового режиму</div>
   </section>
 
   <section id="levels">
-    <h2>Рівні</h2>
-    <div class="card">Рівень 1 — Простий старт</div>
-    <div class="card">Рівень 2 — Складні пастки</div>
-    <div class="card">Рівень 3 — Блискавичні реакції</div>
+    <h2>🌀 Рівні</h2>
+    <div class="card">Рівень 1 — Початок</div>
+    <div class="card">Рівень 2 — Перешкоди та реакція</div>
+    <div class="card">Рівень 3 — Енергія на максимум</div>
   </section>
 
   <section id="bonuses">
-    <h2>Бонуси</h2>
-    <div class="card">🛡️ Щит — один шанс вижити</div>
-    <div class="card">🔥 Прискорення — подвійна швидкість</div>
-    <div class="card">🎁 Таємні досягнення — для справжніх профі</div>
+    <h2>💎 Бонуси</h2>
+    <div class="card">Щит неону — блокує першу пастку</div>
+    <div class="card">Прискорення — подвійна швидкість</div>
+    <div class="card">Режим HyperGlow — усе світиться і вибухає!</div>
   </section>
 
   <section id="download" class="download">
@@ -283,7 +260,7 @@ footer{
 </main>
 
 <footer>
-  <p>© 2025 BrixDash Deluxe. Усі права захищені.</p>
+  <p>© 2025 BrixDash HyperGlow. Всі права захищені.</p>
 </footer>
 
 <script>
