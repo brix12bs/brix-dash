@@ -3,26 +3,25 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>BrixDash Deluxe — Live Gradient</title>
+<title>BrixDash Deluxe — Gradient Menu Toggle</title>
 <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{
+  :root {
     --g1: #00bfff;
     --g2: #7f00ff;
     --g-angle: 135deg;
   }
 
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%}
-  body{
-    font-family:"Open Sans",sans-serif;
-    color:#f2f6ff;
-    /* живий градієнт фон */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Open Sans", sans-serif;
+    color: #f2f6ff;
     background: linear-gradient(var(--g-angle), var(--g1), var(--g2));
     background-size: 400% 400%;
     animation: gradientShift 12s ease infinite;
     transition: background 0.6s ease;
-    overflow-x:hidden;
+    overflow-x: hidden;
   }
   @keyframes gradientShift {
     0% { background-position: 0% 50%; }
@@ -30,98 +29,162 @@
     100% { background-position: 0% 50%; }
   }
 
-  /* Навігація */
-  nav {
-    position:fixed;top:12px;left:50%;transform:translateX(-50%);
-    background:rgba(0,0,0,0.4);backdrop-filter:blur(8px);
-    border-radius:999px;padding:6px 10px;
-    display:flex;gap:8px;z-index:100;border:1px solid rgba(255,255,255,0.08);
+  /* Кнопка відкриття меню */
+  #toggleGradient {
+    position: fixed;
+    right: 20px;
+    top: 20px;
+    z-index: 120;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    border-radius: 8px;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
   }
-  nav a{
-    color:#fff;text-decoration:none;padding:10px 16px;border-radius:999px;
-    font-weight:600;transition:0.3s;
-  }
-  nav a:hover, nav a.active{
-    background:rgba(255,255,255,0.9);color:#000;
-    box-shadow:0 0 15px rgba(255,255,255,0.4);
+  #toggleGradient:hover {
+    background: rgba(255,255,255,0.2);
   }
 
-  header.hero{text-align:center;padding:130px 20px 60px;}
-  header.hero h1{
-    font-family:'Russo One',sans-serif;
-    font-size:3rem;color:#fff;text-shadow:0 0 25px rgba(255,255,255,0.5);
+  /* Контролер градієнта */
+  .controls {
+    position: fixed;
+    right: 20px;
+    top: 60px;
+    width: 280px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 14px;
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    z-index: 110;
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.5s ease;
+  }
+  .controls.hidden {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+  }
+
+  .controls h4 { margin-bottom: 8px; }
+  .row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  input[type=color] { width: 60px; height: 36px; border: none; border-radius: 8px; cursor: pointer; }
+  input[type=range] { flex: 1; }
+  .btn-mini {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 10px;
+    cursor: pointer;
+  }
+  .btn-mini:hover { background: rgba(255,255,255,0.35); }
+
+  /* Меню навігації */
+  nav {
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    border-radius: 999px;
+    padding: 6px 10px;
+    display: flex;
+    gap: 8px;
+    z-index: 100;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  nav a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-weight: 600;
+    transition: 0.3s;
+  }
+  nav a:hover, nav a.active {
+    background: rgba(255,255,255,0.9);
+    color: #000;
+    box-shadow: 0 0 15px rgba(255,255,255,0.4);
+  }
+
+  header.hero { text-align: center; padding: 130px 20px 60px; }
+  header.hero h1 {
+    font-family: 'Russo One', sans-serif;
+    font-size: 3rem;
+    color: #fff;
+    text-shadow: 0 0 25px rgba(255,255,255,0.5);
     animation: glow 2s infinite alternate;
   }
-  @keyframes glow{
-    from{ text-shadow:0 0 10px var(--g1); }
-    to{ text-shadow:0 0 25px var(--g2); }
+  @keyframes glow {
+    from { text-shadow: 0 0 10px var(--g1); }
+    to { text-shadow: 0 0 25px var(--g2); }
+  }
+  header.hero p { color: #e3ecff; margin-top: 10px; font-size: 1.2rem; }
+
+  main.container { max-width: 1100px; margin: 40px auto; padding: 0 18px 80px; }
+
+  section { margin-bottom: 50px; opacity: 0; transform: translateY(20px); transition: all 0.7s ease; }
+  section.visible { opacity: 1; transform: none; }
+
+  h2 { font-family: 'Russo One', sans-serif; color: #fff; margin-bottom: 16px; }
+
+  .card {
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 14px;
+    backdrop-filter: blur(6px);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 0 30px rgba(255,255,255,0.2);
   }
 
-  header.hero p{color:#e3ecff;margin-top:10px;font-size:1.2rem;}
+  .grid { display: grid; gap: 18px; }
+  @media (min-width:760px) { .grid { grid-template-columns: repeat(3, 1fr); } }
 
-  main.container{max-width:1100px;margin:40px auto;padding:0 18px 80px;}
-
-  section{margin-bottom:50px;opacity:0;transform:translateY(20px);
-    transition:all 0.7s cubic-bezier(.2,.9,.2,1);}
-  section.visible{opacity:1;transform:none}
-
-  h2{
-    font-family:'Russo One',sans-serif;color:#fff;
-    margin-bottom:16px;text-shadow:0 0 10px rgba(0,0,0,0.6);
+  .download {
+    text-align: center;
+    padding: 40px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 14px;
+    backdrop-filter: blur(6px);
+  }
+  .btn {
+    display: inline-block;
+    margin-top: 10px;
+    background: rgba(255,255,255,0.9);
+    color: #000;
+    font-weight: 700;
+    padding: 12px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: 0.3s;
+  }
+  .btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 25px rgba(255,255,255,0.3);
   }
 
-  .card{
-    background:rgba(255,255,255,0.1);border-radius:12px;
-    padding:18px;margin-bottom:14px;
-    backdrop-filter:blur(6px);
-    transition:transform 0.3s,box-shadow 0.3s;
-  }
-  .card:hover{
-    transform:translateY(-8px);
-    box-shadow:0 0 30px rgba(255,255,255,0.2);
-  }
-
-  .grid{display:grid;gap:18px;}
-  @media(min-width:760px){.grid{grid-template-columns:repeat(3,1fr)}}
-
-  .download{
-    text-align:center;padding:40px;background:rgba(255,255,255,0.1);
-    border-radius:14px;backdrop-filter:blur(6px);
-  }
-  .btn{
-    display:inline-block;margin-top:10px;
-    background:rgba(255,255,255,0.9);
-    color:#000;font-weight:700;
-    padding:12px 18px;border-radius:10px;
-    text-decoration:none;transition:0.3s;
-  }
-  .btn:hover{transform:translateY(-5px);box-shadow:0 0 25px rgba(255,255,255,0.3);}
-
-  footer{text-align:center;padding:25px;color:#ddd;font-size:0.9rem;}
-  /* Контролер градієнта */
-  .controls{
-    position:fixed;right:20px;top:20px;width:280px;
-    background:rgba(0,0,0,0.4);padding:12px;border-radius:12px;
-    backdrop-filter:blur(8px);
-    border:1px solid rgba(255,255,255,0.08);
-    color:#fff;z-index:110;
-  }
-  .controls h4{margin-bottom:8px;}
-  .row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-  input[type=color]{width:60px;height:36px;border:none;cursor:pointer;border-radius:8px;}
-  input[type=range]{flex:1;}
-  .btn-mini{
-    background:rgba(255,255,255,0.2);color:#fff;
-    border:none;border-radius:6px;padding:8px 10px;cursor:pointer;
-  }
-  .btn-mini:hover{background:rgba(255,255,255,0.35);}
+  footer { text-align: center; padding: 25px; color: #ddd; font-size: 0.9rem; }
 </style>
 </head>
 <body>
 
-<!-- Контролер градієнта -->
-<div class="controls">
-  <h4>🎨 Градієнт фон</h4>
+<!-- Кнопка для показу/приховування меню -->
+<button id="toggleGradient">🎨 Градієнти</button>
+
+<!-- Меню градієнта -->
+<div class="controls hidden" id="gradientMenu">
+  <h4>Налаштування градієнта</h4>
   <div class="row">
     <label>Колір 1:</label><input id="col1" type="color" value="#00bfff">
     <label>Колір 2:</label><input id="col2" type="color" value="#7f00ff">
@@ -238,6 +301,13 @@ navLinks.forEach(link=>{
     const target=document.getElementById(link.dataset.target);
     if(target){target.scrollIntoView({behavior:'smooth'});}
   });
+});
+
+/* Кнопка відкриття/закриття меню градієнта */
+const toggleBtn = document.getElementById('toggleGradient');
+const menu = document.getElementById('gradientMenu');
+toggleBtn.addEventListener('click', ()=>{
+  menu.classList.toggle('hidden');
 });
 </script>
 </body>
