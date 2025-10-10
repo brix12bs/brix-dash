@@ -1,130 +1,141 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BrixDash Deluxe</title>
-<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>BrixDash Deluxe — Live Gradient</title>
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    font-family:'Open Sans', sans-serif;
-    background-color:#000;
-    color:#f2f2f2;
-    scroll-behavior:smooth;
+  :root{
+    --g1: #00bfff;
+    --g2: #7f00ff;
+    --g-angle: 135deg;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:"Open Sans",sans-serif;
+    color:#f2f6ff;
+    /* живий градієнт фон */
+    background: linear-gradient(var(--g-angle), var(--g1), var(--g2));
+    background-size: 400% 400%;
+    animation: gradientShift 12s ease infinite;
+    transition: background 0.6s ease;
     overflow-x:hidden;
   }
-  canvas#stars {
-    position:fixed; top:0; left:0;
-    width:100%; height:100%;
-    z-index:-1;
-    background: radial-gradient(circle at bottom, #020211 0%, #000 100%);
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
   }
-  header.hero {
-    text-align:center;
-    padding:120px 20px;
-    animation:fadeIn 1.5s ease-out;
-  }
-  header.hero h1 {
-    font-family:'Russo One', sans-serif;
-    font-size:3rem;
-    color:#00bfff;
-    text-shadow:0 0 15px #00bfff;
-    animation:glow 2s infinite alternate;
-  }
-  header.hero p {
-    font-size:1.2rem;
-    color:#ccc;
-    margin-top:10px;
-    animation:fadeIn 2s ease-out;
-  }
+
+  /* Навігація */
   nav {
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    background:rgba(10,10,20,0.95);
-    display:flex;
-    justify-content:center;
-    z-index:100;
-    border-bottom:2px solid #00bfff;
+    position:fixed;top:12px;left:50%;transform:translateX(-50%);
+    background:rgba(0,0,0,0.4);backdrop-filter:blur(8px);
+    border-radius:999px;padding:6px 10px;
+    display:flex;gap:8px;z-index:100;border:1px solid rgba(255,255,255,0.08);
   }
-  nav a {
-    color:#fff;
-    text-decoration:none;
-    padding:15px 20px;
-    font-weight:600;
-    transition:0.3s;
-    cursor:pointer;
+  nav a{
+    color:#fff;text-decoration:none;padding:10px 16px;border-radius:999px;
+    font-weight:600;transition:0.3s;
   }
-  nav a:hover, nav a.active { color:#00bfff; text-shadow:0 0 10px #00bfff; }
-  main.container {
-    max-width:1100px;
-    margin:180px auto 40px;
-    padding:0 20px;
+  nav a:hover, nav a.active{
+    background:rgba(255,255,255,0.9);color:#000;
+    box-shadow:0 0 15px rgba(255,255,255,0.4);
   }
-  section {
-    margin-bottom:60px;
-    display:none; /* Приховуємо всі секції спочатку */
-    opacity:0;
-    transform:translateY(30px);
-    transition:1s all;
-  }
-  section.visible {
-    display:block;
-    opacity:1;
-    transform:translateY(0);
-  }
-  h2 {
-    color:#00bfff;
+
+  header.hero{text-align:center;padding:130px 20px 60px;}
+  header.hero h1{
     font-family:'Russo One',sans-serif;
-    margin-bottom:20px;
-    text-shadow:0 0 10px #00bfff;
+    font-size:3rem;color:#fff;text-shadow:0 0 25px rgba(255,255,255,0.5);
+    animation: glow 2s infinite alternate;
   }
-  p, li { color:#ddd; line-height:1.6; }
-  ul { list-style-type:square; padding-left:20px; }
-  .download {
-    text-align:center;
-    background:rgba(10,20,40,0.7);
-    padding:50px 20px;
-    border-radius:12px;
-    transition:0.5s all;
+  @keyframes glow{
+    from{ text-shadow:0 0 10px var(--g1); }
+    to{ text-shadow:0 0 25px var(--g2); }
   }
-  .download:hover {
-    transform:translateY(-6px);
-    box-shadow:0 0 25px rgba(0,191,255,0.4);
+
+  header.hero p{color:#e3ecff;margin-top:10px;font-size:1.2rem;}
+
+  main.container{max-width:1100px;margin:40px auto;padding:0 18px 80px;}
+
+  section{margin-bottom:50px;opacity:0;transform:translateY(20px);
+    transition:all 0.7s cubic-bezier(.2,.9,.2,1);}
+  section.visible{opacity:1;transform:none}
+
+  h2{
+    font-family:'Russo One',sans-serif;color:#fff;
+    margin-bottom:16px;text-shadow:0 0 10px rgba(0,0,0,0.6);
   }
-  footer {
-    text-align:center;
-    padding:25px;
-    color:#888;
-    font-size:0.9rem;
-    border-top:1px solid #222;
+
+  .card{
+    background:rgba(255,255,255,0.1);border-radius:12px;
+    padding:18px;margin-bottom:14px;
+    backdrop-filter:blur(6px);
+    transition:transform 0.3s,box-shadow 0.3s;
   }
-  .card {
-    background: rgba(20,20,40,0.8);
-    border-radius:12px;
-    overflow:hidden;
-    text-align:center;
-    transition:transform 0.3s, box-shadow 0.3s;
-    padding:20px;
+  .card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 0 30px rgba(255,255,255,0.2);
   }
-  .card:hover {
-    transform:translateY(-6px);
-    box-shadow:0 0 25px rgba(0,191,255,0.4);
+
+  .grid{display:grid;gap:18px;}
+  @media(min-width:760px){.grid{grid-template-columns:repeat(3,1fr)}}
+
+  .download{
+    text-align:center;padding:40px;background:rgba(255,255,255,0.1);
+    border-radius:14px;backdrop-filter:blur(6px);
   }
-  @keyframes glow { 0% { text-shadow:0 0 10px #00bfff; } 100% { text-shadow:0 0 25px #00ffff; } }
-  @keyframes fadeIn { 0% { opacity:0; transform:translateY(20px);} 100% { opacity:1; transform:translateY(0);} }
+  .btn{
+    display:inline-block;margin-top:10px;
+    background:rgba(255,255,255,0.9);
+    color:#000;font-weight:700;
+    padding:12px 18px;border-radius:10px;
+    text-decoration:none;transition:0.3s;
+  }
+  .btn:hover{transform:translateY(-5px);box-shadow:0 0 25px rgba(255,255,255,0.3);}
+
+  footer{text-align:center;padding:25px;color:#ddd;font-size:0.9rem;}
+  /* Контролер градієнта */
+  .controls{
+    position:fixed;right:20px;top:20px;width:280px;
+    background:rgba(0,0,0,0.4);padding:12px;border-radius:12px;
+    backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,0.08);
+    color:#fff;z-index:110;
+  }
+  .controls h4{margin-bottom:8px;}
+  .row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  input[type=color]{width:60px;height:36px;border:none;cursor:pointer;border-radius:8px;}
+  input[type=range]{flex:1;}
+  .btn-mini{
+    background:rgba(255,255,255,0.2);color:#fff;
+    border:none;border-radius:6px;padding:8px 10px;cursor:pointer;
+  }
+  .btn-mini:hover{background:rgba(255,255,255,0.35);}
 </style>
 </head>
 <body>
 
-<canvas id="stars"></canvas>
-
-<header class="hero">
-  <h1>BrixDash Deluxe</h1>
-  <p>Проходь всі рівні, збирай бонуси та досягнення!</p>
-</header>
+<!-- Контролер градієнта -->
+<div class="controls">
+  <h4>🎨 Градієнт фон</h4>
+  <div class="row">
+    <label>Колір 1:</label><input id="col1" type="color" value="#00bfff">
+    <label>Колір 2:</label><input id="col2" type="color" value="#7f00ff">
+  </div>
+  <div class="row">
+    <label>Кут:</label>
+    <input id="angle" type="range" min="0" max="360" value="135">
+    <span id="angleVal">135°</span>
+  </div>
+  <div class="row" style="justify-content:space-between;margin-top:10px;">
+    <button id="randomBtn" class="btn-mini">Випадковий</button>
+    <button id="resetBtn" class="btn-mini">Скинути</button>
+  </div>
+</div>
 
 <nav>
   <a data-target="goal" class="active">Мета гри</a>
@@ -134,40 +145,37 @@
   <a data-target="download">Завантажити</a>
 </nav>
 
+<header class="hero">
+  <h1>BrixDash Deluxe</h1>
+  <p>Проходь всі рівні, збирай бонуси та досягнення!</p>
+</header>
+
 <main class="container">
   <section id="goal" class="visible">
     <h2>Мета гри</h2>
-    <p>Проходь всі рівні, уникай пасток і перешкод, збирай бонуси та досягнення, щоб відкрити всі таємниці BrixDash!</p>
+    <p>Проходь усі рівні, уникай пасток і перешкод, збирай бонуси та досягнення, щоб відкрити всі таємниці BrixDash!</p>
   </section>
 
   <section id="mechanics">
     <h2>Механіка</h2>
-    <ul>
-      <li>Стиль гри як у Geometry Dash – точний таймінг і стрибки</li>
-      <li>Уникай перешкод та рухайся вперед</li>
-      <li>Комбо для додаткових очок</li>
-      <li>Збір бонусів для прискорення та щитів</li>
-      <li>Кожен рівень стає складнішим та швидшим</li>
-    </ul>
+    <div class="card">Стиль гри як у Geometry Dash — точний таймінг і стрибки</div>
+    <div class="card">Уникай перешкод і рухайся вперед</div>
+    <div class="card">Комбо для додаткових очок</div>
   </section>
 
   <section id="levels">
     <h2>Рівні</h2>
     <div class="grid">
       <div class="card"><h3>Рівень 1</h3><p>Прості перешкоди, знайомство з механікою.</p></div>
-      <div class="card"><h3>Рівень 2</h3><p>Складніші перешкоди та перший бос.</p></div>
-      <div class="card"><h3>Рівень 3</h3><p>Комбінації стрибків і швидкісні ділянки.</p></div>
+      <div class="card"><h3>Рівень 2</h3><p>Складніші пастки та бос.</p></div>
+      <div class="card"><h3>Рівень 3</h3><p>Швидкі ділянки та комбо.</p></div>
     </div>
   </section>
 
   <section id="bonuses">
-    <h2>Бонуси та досягнення</h2>
-    <ul>
-      <li>Щити та прискорення</li>
-      <li>Секретні рівні та бонусні зони</li>
-      <li>Досягнення за проходження без втрат</li>
-      <li>Колекційні предмети для відкриття нових рівнів</li>
-    </ul>
+    <h2>Бонуси</h2>
+    <div class="card">Щит — захищає від першого удару</div>
+    <div class="card">Прискорення — дає перевагу у швидкості</div>
   </section>
 
   <section id="download" class="download">
@@ -182,31 +190,55 @@
 </footer>
 
 <script>
-  // Космос
-  const canvas = document.getElementById("stars");
-  const ctx = canvas.getContext("2d");
-  let stars = [];
-  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;stars=Array.from({length:200},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.8,s:Math.random()*0.6+0.2}));}
-  function drawStars(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle="white";for(let s of stars){ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();s.y+=s.s;if(s.y>canvas.height)s.y=0;}requestAnimationFrame(drawStars);}
-  window.addEventListener("resize",resize);resize();drawStars();
+const col1=document.getElementById('col1');
+const col2=document.getElementById('col2');
+const angle=document.getElementById('angle');
+const angleVal=document.getElementById('angleVal');
+const randomBtn=document.getElementById('randomBtn');
+const resetBtn=document.getElementById('resetBtn');
 
-  // Плавне появлення
-  const sections=document.querySelectorAll('section');
-  const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting)entry.target.classList.add('visible');});},{threshold:0.2});
-  sections.forEach(section=>observer.observe(section));
+function applyGradient(a,b,deg){
+  document.documentElement.style.setProperty('--g1',a);
+  document.documentElement.style.setProperty('--g2',b);
+  document.documentElement.style.setProperty('--g-angle',deg+'deg');
+  angleVal.textContent=deg+'°';
+}
 
-  // Вкладки
-  const navLinks=document.querySelectorAll('nav a');
-  navLinks.forEach(link=>{
-    link.addEventListener('click',()=>{
-      navLinks.forEach(l=>l.classList.remove('active'));
-      link.classList.add('active');
-      const target=link.dataset.target;
-      sections.forEach(s=>{
-        if(s.id===target){s.classList.add('visible');s.style.display='block';} else {s.classList.remove('visible');s.style.display='none';}
-      });
-    });
+col1.addEventListener('input',()=>applyGradient(col1.value,col2.value,angle.value));
+col2.addEventListener('input',()=>applyGradient(col1.value,col2.value,angle.value));
+angle.addEventListener('input',()=>applyGradient(col1.value,col2.value,angle.value));
+
+randomBtn.addEventListener('click',()=>{
+  const rc=()=>'#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
+  const a=rc(),b=rc(),deg=Math.floor(Math.random()*360);
+  col1.value=a;col2.value=b;angle.value=deg;
+  applyGradient(a,b,deg);
+});
+
+resetBtn.addEventListener('click',()=>{
+  col1.value="#00bfff";col2.value="#7f00ff";angle.value=135;
+  applyGradient("#00bfff","#7f00ff",135);
+});
+
+/* Плавне появлення секцій */
+const sections=document.querySelectorAll('section');
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting)e.target.classList.add('visible');
   });
+},{threshold:0.15});
+sections.forEach(s=>observer.observe(s));
+
+/* Вкладки */
+const navLinks=document.querySelectorAll('nav a');
+navLinks.forEach(link=>{
+  link.addEventListener('click',()=>{
+    navLinks.forEach(l=>l.classList.remove('active'));
+    link.classList.add('active');
+    const target=document.getElementById(link.dataset.target);
+    if(target){target.scrollIntoView({behavior:'smooth'});}
+  });
+});
 </script>
 </body>
 </html>
