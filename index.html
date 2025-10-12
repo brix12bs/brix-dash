@@ -1,318 +1,879 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>BrixDash HyperGlow</title>
-<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-:root{
-  --g1:#00bfff;
-  --g2:#7f00ff;
-  --g-angle:135deg;
-}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>BrixDash HyperGlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <style>
+        :root {
+            --g1: #00bfff;
+            --g2: #ff00ff;
+            --g-angle: 135deg;
+        }
 
-/* Глобальний стиль */
-*{margin:0;padding:0;box-sizing:border-box;}
-html,body{height:100%;scroll-behavior:smooth;}
-body{
-  font-family:'Open Sans',sans-serif;
-  color:#eaf6ff;
-  background:linear-gradient(var(--g-angle),var(--g1),var(--g2));
-  background-size:400% 400%;
-  animation:bgShift 10s ease infinite;
-  overflow-x:hidden;
-  transition:background 1s ease;
-}
-@keyframes bgShift{
-  0%{background-position:0% 50%;}
-  50%{background-position:100% 50%;}
-  100%{background-position:0% 50%;}
-}
+        /* Глобальний стиль */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; scroll-behavior: smooth; }
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: #eaf6ff;
+            background: #000;
+            overflow-x: hidden;
+            position: relative;
+        }
 
-/* Анімоване світіння */
-@keyframes glowColor {
-  0% { filter: drop-shadow(0 0 8px #00bfff); color:#00bfff; }
-  25% { filter: drop-shadow(0 0 10px #ff00ff); color:#ff00ff; }
-  50% { filter: drop-shadow(0 0 8px #00ffcc); color:#00ffcc; }
-  75% { filter: drop-shadow(0 0 10px #ffcc00); color:#ffcc00; }
-  100% { filter: drop-shadow(0 0 8px #00bfff); color:#00bfff; }
-}
+        /* WebGL фон із неоновими хвилями */
+        #webgl-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            opacity: 0.7;
+        }
 
-/* Навігація */
-nav{
-  position:fixed;
-  top:12px;left:50%;transform:translateX(-50%);
-  display:flex;gap:10px;
-  background:rgba(0,0,0,0.5);
-  backdrop-filter:blur(12px);
-  border-radius:999px;
-  padding:8px 14px;
-  border:1px solid rgba(255,255,255,0.1);
-  box-shadow:0 0 25px rgba(255,255,255,0.2);
-  z-index:100;
-}
-nav a{
-  color:#fff;text-decoration:none;padding:10px 18px;
-  font-weight:600;border-radius:999px;
-  transition:0.3s;text-shadow:0 0 8px #00ffff;
-}
-nav a:hover,nav a.active{
-  background:rgba(255,255,255,0.9);
-  color:#000;
-  box-shadow:0 0 25px #00ffff;
-}
+        /* 3D-частинки */
+        #three-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
+            pointer-events: none;
+        }
 
-/* Кнопка градієнта */
-#toggleGradient{
-  position:fixed;
-  right:20px;top:20px;
-  background:rgba(0,0,0,0.5);
-  border:1px solid rgba(255,255,255,0.3);
-  border-radius:12px;
-  padding:10px 16px;
-  color:#fff;
-  cursor:pointer;
-  font-weight:700;
-  text-shadow:0 0 8px #00ffff;
-  animation:glowColor 6s linear infinite;
-  z-index:120;
-  transition:0.4s;
-}
-#toggleGradient:hover{transform:scale(1.05);}
+        /* Модальне вікно гри */
+        #game-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(15px);
+        }
+        #game-modal.active {
+            display: flex;
+        }
+        #game-canvas {
+            width: 800px;
+            height: 600px;
+            max-width: 90vw;
+            max-height: 80vh;
+            border: 3px solid #00ffff;
+            border-radius: 12px;
+            box-shadow: 0 0 40px #00ffff, 0 0 80px #ff00ff;
+            background: linear-gradient(135deg, #000, #001122);
+            animation: glowPulse 3s linear infinite;
+        }
+        #close-game {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 0, 0, 0.8);
+            border: none;
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            text-shadow: 0 0 15px #ff0000;
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: glowPulse 4s linear infinite;
+        }
+        #close-game:hover {
+            transform: scale(1.15);
+            box-shadow: 0 0 20px #ff0000;
+        }
 
-/* Панель градієнта */
-.controls{
-  position:fixed;right:20px;top:70px;width:280px;
-  background:rgba(0,0,0,0.6);
-  padding:14px;border-radius:14px;
-  backdrop-filter:blur(10px);
-  border:1px solid rgba(255,255,255,0.1);
-  box-shadow:0 0 25px rgba(255,255,255,0.3);
-  color:#fff;z-index:110;
-  transition:all 0.6s ease;
-}
-.controls.hidden{opacity:0;transform:translateY(-20px);pointer-events:none;}
-.controls h4{margin-bottom:8px;animation:glowColor 8s linear infinite;}
-.row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
-input[type=color]{width:60px;height:36px;border:none;border-radius:8px;cursor:pointer;}
-input[type=range]{flex:1;}
-.btn-mini{
-  background:rgba(0,255,255,0.15);
-  color:#0ff;
-  border:none;border-radius:6px;
-  padding:8px 10px;cursor:pointer;font-weight:600;
-  transition:0.3s;
-}
-.btn-mini:hover{background:rgba(0,255,255,0.25);transform:translateY(-2px);}
+        /* Анімоване неонове світіння */
+        @keyframes glowPulse {
+            0% { filter: drop-shadow(0 0 10px #00bfff) hue-rotate(0deg); }
+            25% { filter: drop-shadow(0 0 15px #ff00ff) hue-rotate(90deg); }
+            50% { filter: drop-shadow(0 0 20px #00ffcc) hue-rotate(180deg); }
+            75% { filter: drop-shadow(0 0 15px #ffcc00) hue-rotate(270deg); }
+            100% { filter: drop-shadow(0 0 10px #00bfff) hue-rotate(360deg); }
+        }
 
-/* Заголовок */
-header.hero{
-  text-align:center;
-  padding:130px 20px 60px;
-}
-header.hero h1{
-  font-family:'Russo One',sans-serif;
-  font-size:3.2rem;
-  animation:glowColor 6s linear infinite;
-  text-shadow:0 0 25px #fff;
-}
-header.hero p{
-  font-size:1.2rem;
-  margin-top:10px;
-  color:#fff;
-  text-shadow:0 0 10px rgba(255,255,255,0.6);
-  animation:pulseText 3s ease-in-out infinite alternate;
-}
-@keyframes pulseText{
-  from{text-shadow:0 0 5px #fff,0 0 10px #00ffff;}
-  to{text-shadow:0 0 15px #fff,0 0 25px #ff00ff;}
-}
+        /* Навігація з 3D-ефектом */
+        nav {
+            position: fixed;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%) perspective(1000px);
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 999px;
+            padding: 10px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.5);
+            z-index: 100;
+            max-width: 90vw;
+            transform-style: preserve-3d;
+            animation: glowPulse 5s linear infinite;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 20px;
+            font-weight: 700;
+            border-radius: 999px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-shadow: 0 0 15px #00ffff;
+            font-size: 1rem;
+            transform: translateZ(40px);
+            animation: glowPulse 4s linear infinite;
+        }
+        nav a:hover, nav a.active {
+            background: linear-gradient(90deg, #00bfff, #ff00ff);
+            color: #fff;
+            box-shadow: 0 0 40px #00ffff, 0 0 80px #ff00ff;
+            transform: translateZ(80px) rotateY(20deg) scale(1.1);
+        }
 
-/* Контент */
-main.container{max-width:1100px;margin:60px auto;padding:0 20px 100px;}
-section{margin-bottom:60px;opacity:0;transform:translateY(25px);transition:all 0.8s ease;}
-section.visible{opacity:1;transform:none;}
-h2{
-  font-family:'Russo One',sans-serif;
-  font-size:2rem;
-  animation:glowColor 7s linear infinite;
-  margin-bottom:20px;
-}
+        /* Заголовок із голографічним ефектом */
+        header.hero {
+            text-align: center;
+            padding: 140px 20px 80px;
+            perspective: 1000px;
+            position: relative;
+        }
+        header.hero h1 {
+            font-family: 'Russo One', sans-serif;
+            font-size: 4rem;
+            animation: hologram 3s linear infinite;
+            text-shadow: 0 0 30px #fff, 0 0 50px #00ffff, 0 0 70px #ff00ff;
+            transform: translateZ(80px) rotateX(10deg);
+            transition: transform 0.5s;
+        }
+        header.hero:hover h1 {
+            transform: translateZ(120px) rotateX(15deg) scale(1.05);
+        }
+        header.hero p {
+            font-size: 1.5rem;
+            margin-top: 15px;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+            animation: pulseText 2s ease-in-out infinite alternate;
+            transform: translateZ(50px);
+        }
+        #cube-container {
+            width: 250px;
+            height: 250px;
+            margin: 30px auto;
+            transform-style: preserve-3d;
+            animation: glowPulse 3s linear infinite;
+        }
+        @keyframes hologram {
+            0% { filter: drop-shadow(0 0 15px #00bfff) hue-rotate(0deg); }
+            50% { filter: drop-shadow(0 0 25px #ff00ff) hue-rotate(180deg); }
+            100% { filter: drop-shadow(0 0 15px #00bfff) hue-rotate(360deg); }
+        }
+        @keyframes pulseText {
+            from { text-shadow: 0 0 10px #fff, 0 0 20px #00ffff; }
+            to { text-shadow: 0 0 30px #fff, 0 0 50px #ff00ff; }
+        }
 
-/* Картки */
-.card{
-  background:rgba(255,255,255,0.1);
-  border-radius:14px;
-  padding:22px;margin-bottom:14px;
-  text-align:center;
-  border:1px solid rgba(255,255,255,0.2);
-  transition:0.4s;
-  box-shadow:0 0 20px rgba(255,255,255,0.2);
-}
-.card:hover{
-  transform:translateY(-8px) scale(1.03);
-  box-shadow:0 0 30px #00ffff,0 0 60px #ff00ff;
-}
+        /* Контент */
+        main.container {
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 0 20px 120px;
+            perspective: 1000px;
+        }
+        section {
+            margin-bottom: 80px;
+            opacity: 0;
+            transform: translateY(50px) rotateX(-10deg) translateZ(0);
+            transition: all 1s ease;
+        }
+        section.visible {
+            opacity: 1;
+            transform: translateY(0) rotateX(0) translateZ(40px);
+        }
+        h2 {
+            font-family: 'Russo One', sans-serif;
+            font-size: 2.5rem;
+            animation: hologram 5s linear infinite;
+            margin-bottom: 25px;
+            transform: translateZ(50px);
+        }
 
-/* Завантаження */
-.download{
-  text-align:center;
-  background:rgba(0,0,0,0.5);
-  padding:50px;border-radius:14px;
-  box-shadow:0 0 30px rgba(255,255,255,0.2);
-}
-.btn{
-  display:inline-block;
-  background:linear-gradient(90deg,var(--g1),var(--g2));
-  background-size:200% 200%;
-  color:#fff;
-  font-weight:700;
-  padding:14px 24px;
-  border-radius:10px;
-  text-decoration:none;
-  animation:btnGlow 6s linear infinite;
-  transition:0.3s;
-}
-@keyframes btnGlow{
-  0%{box-shadow:0 0 15px #00ffff;filter:hue-rotate(0deg);}
-  50%{box-shadow:0 0 35px #ff00ff;filter:hue-rotate(180deg);}
-  100%{box-shadow:0 0 15px #00ffff;filter:hue-rotate(360deg);}
-}
-.btn:hover{
-  transform:scale(1.05);
-}
+        /* Картки з 3D-ефектом */
+        .card {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 16px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            transition: transform 0.4s, box-shadow 0.4s;
+            transform-style: preserve-3d;
+            transform: perspective(1000px) translateZ(40px);
+            animation: glowPulse 4s linear infinite;
+        }
+        .card:hover {
+            transform: perspective(1000px) translateY(-15px) translateZ(80px) rotateY(25deg);
+            box-shadow: 0 0 50px #00ffff, 0 0 100px #ff00ff;
+        }
 
-/* Футер */
-footer{
-  text-align:center;padding:30px;color:#ccc;font-size:0.9rem;
-  border-top:1px solid rgba(255,255,255,0.1);
-  animation:glowColor 10s linear infinite;
-}
-</style>
+        /* Завантаження */
+        .download {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 60px;
+            border-radius: 16px;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.4);
+            transform: perspective(1000px) translateZ(40px);
+            animation: glowPulse 5s linear infinite;
+        }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(90deg, var(--g1), var(--g2));
+            background-size: 200% 200%;
+            color: #fff;
+            font-weight: 700;
+            padding: 16px 28px;
+            border-radius: 12px;
+            text-decoration: none;
+            animation: btnGlow 4s linear infinite;
+            transition: transform 0.3s, box-shadow 0.3s;
+            transform: perspective(1000px) translateZ(40px);
+            margin: 12px;
+        }
+        .btn:hover {
+            transform: perspective(1000px) translateZ(80px) scale(1.1);
+            box-shadow: 0 0 50px #00ffff, 0 0 100px #ff00ff;
+        }
+        .btn:active {
+            animation: flash 0.5s linear;
+        }
+        @keyframes btnGlow {
+            0% { box-shadow: 0 0 30px #00ffff; filter: hue-rotate(0deg); background-position: 0% 50%; }
+            50% { box-shadow: 0 0 60px #ff00ff; filter: hue-rotate(180deg); background-position: 100% 50%; }
+            100% { box-shadow: 0 0 30px #00ffff; filter: hue-rotate(360deg); background-position: 0% 50%; }
+        }
+        @keyframes flash {
+            0% { filter: brightness(1); }
+            50% { filter: brightness(2) drop-shadow(0 0 20px #ffffff); }
+            100% { filter: brightness(1); }
+        }
+
+        /* Футер */
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #ccc;
+            font-size: 1rem;
+            border-top: 2px solid rgba(255, 255, 255, 0.3);
+            animation: glowPulse 6s linear infinite;
+            transform: perspective(1000px) translateZ(30px);
+        }
+
+        /* Медіа-запити для мобільних */
+        @media (max-width: 768px) {
+            header.hero h1 { font-size: 3rem; }
+            nav { gap: 6px; padding: 8px 12px; }
+            nav a { padding: 10px 14px; font-size: 0.9rem; transform: translateZ(20px); }
+            nav a:hover, nav a.active { transform: translateZ(40px) rotateY(10deg); }
+            main.container { margin: 50px auto; padding: 0 10px 100px; }
+            section { margin-bottom: 50px; }
+            .card { transform: perspective(1000px) translateZ(20px); }
+            .card:hover { transform: perspective(1000px) translateY(-10px) translateZ(40px) rotateY(10deg); }
+            .btn { transform: perspective(1000px) translateZ(20px); }
+            .btn:hover { transform: perspective(1000px) translateZ(40px) scale(1.05); }
+            #cube-container { width: 180px; height: 180px; }
+            #game-canvas { width: 90vw; height: 60vh; }
+        }
+    </style>
 </head>
 <body>
+    <canvas id="webgl-bg"></canvas>
+    <canvas id="three-canvas"></canvas>
 
-<button id="toggleGradient">🎨 Градієнт</button>
+    <div id="game-modal">
+        <canvas id="game-canvas"></canvas>
+        <button id="close-game">Закрити</button>
+    </div>
 
-<div class="controls hidden" id="gradientMenu">
-  <h4>Налаштування градієнта</h4>
-  <div class="row">
-    <label>Колір 1:</label><input id="col1" type="color" value="#00bfff">
-    <label>Колір 2:</label><input id="col2" type="color" value="#7f00ff">
-  </div>
-  <div class="row">
-    <label>Кут:</label>
-    <input id="angle" type="range" min="0" max="360" value="135">
-    <span id="angleVal">135°</span>
-  </div>
-  <div class="row" style="justify-content:space-between;margin-top:10px;">
-    <button id="randomBtn" class="btn-mini">Випадковий</button>
-    <button id="resetBtn" class="btn-mini">Скинути</button>
-  </div>
-</div>
+    <nav>
+        <a data-target="goal" class="active">Мета</a>
+        <a data-target="updates">Оновлення</a>
+        <a data-target="mechanics">Механіка</a>
+        <a data-target="levels">Рівні</a>
+        <a data-target="bonuses">Бонуси</a>
+        <a data-target="download">Завантажити</a>
+    </nav>
 
-<nav>
-  <a data-target="goal" class="active">Мета</a>
-  <a data-target="mechanics">Механіка</a>
-  <a data-target="levels">Рівні</a>
-  <a data-target="bonuses">Бонуси</a>
-  <a data-target="download">Завантажити</a>
-</nav>
+    <header class="hero">
+        <h1>BrixDash HyperGlow</h1>
+        <p>Неон. Швидкість. Реакція. Енергія гри — у кожному світловому імпульсі ⚡</p>
+        <div id="cube-container" style="width:250px;height:250px;margin:30px auto;"></div>
+    </header>
 
-<header class="hero">
-  <h1>BrixDash HyperGlow</h1>
-  <p>Неон. Швидкість. Реакція. Енергія гри — у кожному світловому імпульсі ⚡</p>
-</header>
+    <main class="container">
+        <section id="goal" class="visible">
+            <h2>🎯 Мета гри</h2>
+            <p>Подолай усі рівні, уникай пасток і збирай бонуси, щоб відкрити повну силу неонового світу!</p>
+        </section>
 
-<main class="container">
-  <section id="goal" class="visible">
-    <h2>🎯 Мета гри</h2>
-    <p>Подолай усі рівні, уникай пасток і збирай бонуси, щоб відкрити повну силу неонового світу!</p>
-  </section>
+        <section id="updates">
+            <h2>🔥 Оновлення 2025</h2>
+            <div class="card">Додано 3 нові рівні з динамічними неоновими ефектами</div>
+            <div class="card">Покращено графіку: яскравіші анімації та частинки</div>
+            <div class="card">Нові бонуси: "Неоновий щит" та "Гіпермодуль швидкості"</div>
+            <p style="margin-top:20px; font-style:italic; animation: glowPulse 4s linear infinite;">Оновлення від 12 жовтня 2025: Гра стала ще динамічнішою!</p>
+        </section>
 
-  <section id="mechanics">
-    <h2>⚙️ Механіка</h2>
-    <div class="card">Точний таймінг та стрибки</div>
-    <div class="card">Уникай пасток і рухайся вперед</div>
-    <div class="card">Збирай енергію для неонового режиму</div>
-  </section>
+        <section id="mechanics">
+            <h2>⚙️ Механіка</h2>
+            <div class="card">Точний таймінг та стрибки</div>
+            <div class="card">Уникай пасток і рухайся вперед</div>
+            <div class="card">Збирай енергію для неонового режиму</div>
+        </section>
 
-  <section id="levels">
-    <h2>🌀 Рівні</h2>
-    <div class="card">Рівень 1 — Початок</div>
-    <div class="card">Рівень 2 — Перешкоди та реакція</div>
-    <div class="card">Рівень 3 — Енергія на максимум</div>
-  </section>
+        <section id="levels">
+            <h2>🌀 Рівні</h2>
+            <div class="card">Рівень 1 — Початок</div>
+            <div class="card">Рівень 2 — Перешкоди та реакція</div>
+            <div class="card">Рівень 3 — Енергія на максимум</div>
+            <div class="card">Рівень 4 — Неоновий хаос (новий!)</div>
+            <div class="card">Рівень 5 — Фінальний імпульс (новий!)</div>
+        </section>
 
-  <section id="bonuses">
-    <h2>💎 Бонуси</h2>
-    <div class="card">Щит неону — блокує першу пастку</div>
-    <div class="card">Прискорення — подвійна швидкість</div>
-    <div class="card">Режим HyperGlow — усе світиться і вибухає!</div>
-  </section>
+        <section id="bonuses">
+            <h2>💎 Бонуси</h2>
+            <div class="card">Щит неону — блокує першу пастку</div>
+            <div class="card">Прискорення — подвійна швидкість</div>
+            <div class="card">Режим HyperGlow — усе світиться і вибухає!</div>
+            <div class="card">Неоновий щит — захист від кількох ударів (новий!)</div>
+        </section>
 
-  <section id="download" class="download">
-    <h2>🚀 Завантажити гру</h2>
-    <p>Доступно для Windows / Linux (через Wine)</p>
-    <a href="https://drive.google.com/file/d/1n22gbqyc2qdhex92hqnt7MnHiSyibGeJ/view?usp=sharing" target="_blank" class="btn">Завантажити EXE</a>
-  </section>
-</main>
+        <section id="download" class="download">
+            <h2>🚀 Завантажити гру</h2>
+            <p>Доступно для Windows / Linux (через Wine). Версія 2.0 (2025)</p>
+            <a href="https://drive.google.com/file/d/1n22gbqyc2qdhex92hqnt7MnHiSyibGeJ/view?usp=sharing" target="_blank" class="btn">Завантажити EXE</a>
+            <a href="brixdash://play" id="play-now" class="btn">Грати зараз</a>
+            <p id="game-error" style="display:none;color:#ff6666;margin-top:12px;animation: glowPulse 4s linear infinite;">
+                Гра не встановлена? Спробуйте демо або завантажте гру!
+                <button id="play-demo" class="btn-mini">Демо</button>
+            </p>
+        </section>
+    </main>
 
-<footer>
-  <p>© 2025 BrixDash HyperGlow. Всі права захищені.</p>
-</footer>
+    <footer>
+        <p>© 2025 BrixDash HyperGlow. Всі права захищені.</p>
+    </footer>
 
-<script>
-const col1=document.getElementById('col1');
-const col2=document.getElementById('col2');
-const angle=document.getElementById('angle');
-const angleVal=document.getElementById('angleVal');
-const randomBtn=document.getElementById('randomBtn');
-const resetBtn=document.getElementById('resetBtn');
+    <script>
+        // Виправлення помилки: перевірка існування елементів
+        function getElement(id) {
+            const element = document.getElementById(id);
+            if (!element) console.warn(`Element with ID ${id} not found`);
+            return element;
+        }
 
-function applyGradient(a,b,deg){
-  document.documentElement.style.setProperty('--g1',a);
-  document.documentElement.style.setProperty('--g2',b);
-  document.documentElement.style.setProperty('--g-angle',deg+'deg');
-  angleVal.textContent=deg+'°';
-}
-col1.addEventListener('input',()=>applyGradient(col1.value,col2.value,angle.value));
-col2.addEventListener('input',()=>applyGradient(col1.value,col2.value,angle.value));
-angle.addEventListener('input',()=>applyGradient(col1.value,col2.value,angle.value));
+        // WebGL шейдер для неонових хвиль
+        const vsSource = `
+            attribute vec4 aVertexPosition;
+            void main() {
+                gl_Position = aVertexPosition;
+            }
+        `;
+        const fsSource = `
+            precision highp float;
+            uniform float uTime;
+            uniform vec2 uResolution;
+            uniform vec2 uMouse;
+            void main() {
+                vec2 uv = gl_FragCoord.xy / uResolution.xy;
+                vec2 mouse = uMouse / uResolution.xy;
+                float d = distance(uv, mouse);
+                float t = sin(uTime * 0.8 + uv.x * 12.0) * cos(uTime * 0.8 + uv.y * 12.0);
+                float scan = sin(uTime * 2.0 + uv.y * 10.0) * 0.3;
+                float glow = 0.2 + 0.6 * sin(t + d * 6.0) + scan;
+                vec3 color = mix(vec3(0.0, 1.0, 1.0), vec3(1.0, 0.0, 1.0), glow);
+                gl_FragColor = vec4(color, 0.7);
+            }
+        `;
 
-randomBtn.addEventListener('click',()=>{
-  const rc=()=>'#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
-  const a=rc(),b=rc(),deg=Math.floor(Math.random()*360);
-  col1.value=a;col2.value=b;angle.value=deg;
-  applyGradient(a,b,deg);
-});
-resetBtn.addEventListener('click',()=>{
-  col1.value="#00bfff";col2.value="#7f00ff";angle.value=135;
-  applyGradient("#00bfff","#7f00ff",135);
-});
+        try {
+            const webglCanvas = getElement('webgl-bg');
+            if (webglCanvas) {
+                const gl = webglCanvas.getContext('webgl');
+                if (gl) {
+                    const vs = gl.createShader(gl.VERTEX_SHADER);
+                    gl.shaderSource(vs, vsSource);
+                    gl.compileShader(vs);
+                    const fs = gl.createShader(gl.FRAGMENT_SHADER);
+                    gl.shaderSource(fs, fsSource);
+                    gl.compileShader(fs);
+                    const program = gl.createProgram();
+                    gl.attachShader(program, vs);
+                    gl.attachShader(program, fs);
+                    gl.linkProgram(program);
+                    gl.useProgram(program);
 
-const sections=document.querySelectorAll('section');
-const observer=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting)e.target.classList.add('visible');
-  });
-},{threshold:0.15});
-sections.forEach(s=>observer.observe(s));
+                    const positionBuffer = gl.createBuffer();
+                    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+                    const positions = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
+                    gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+                    const positionLocation = gl.getAttribLocation(program, 'aVertexPosition');
+                    gl.enableVertexAttribArray(positionLocation);
+                    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
-const navLinks=document.querySelectorAll('nav a');
-navLinks.forEach(link=>{
-  link.addEventListener('click',()=>{
-    navLinks.forEach(l=>l.classList.remove('active'));
-    link.classList.add('active');
-    const target=document.getElementById(link.dataset.target);
-    if(target){target.scrollIntoView({behavior:'smooth'});}
-  });
-});
+                    const uTime = gl.getUniformLocation(program, 'uTime');
+                    const uResolution = gl.getUniformLocation(program, 'uResolution');
+                    const uMouse = gl.getUniformLocation(program, 'uMouse');
+                    let mouseX = 0, mouseY = 0;
 
-const toggleBtn=document.getElementById('toggleGradient');
-const menu=document.getElementById('gradientMenu');
-toggleBtn.addEventListener('click',()=>menu.classList.toggle('hidden'));
-</script>
+                    function resizeWebGL() {
+                        webglCanvas.width = window.innerWidth;
+                        webglCanvas.height = window.innerHeight;
+                        gl.viewport(0, 0, webglCanvas.width, webglCanvas.height);
+                        gl.uniform2f(uResolution, webglCanvas.width, webglCanvas.height);
+                    }
+                    resizeWebGL();
+                    window.addEventListener('resize', resizeWebGL);
+
+                    document.addEventListener('mousemove', (e) => {
+                        mouseX = e.clientX;
+                        mouseY = window.innerHeight - e.clientY;
+                    });
+
+                    function animateWebGL() {
+                        gl.uniform1f(uTime, performance.now() / 1000);
+                        gl.uniform2f(uMouse, mouseX, mouseY);
+                        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+                        requestAnimationFrame(animateWebGL);
+                    }
+                    animateWebGL();
+                }
+            }
+        } catch (e) {
+            console.warn('WebGL initialization failed:', e);
+        }
+
+        // 3D-кубик і частинки
+        try {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: getElement('three-canvas'), alpha: true });
+            if (renderer) {
+                renderer.setSize(window.innerWidth, window.innerHeight);
+
+                // Кубик гравця в заголовку
+                const cubeContainer = getElement('cube-container');
+                if (cubeContainer) {
+                    const cubeScene = new THREE.Scene();
+                    const cubeCamera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+                    const cubeRenderer = new THREE.WebGLRenderer({ alpha: true });
+                    cubeRenderer.setSize(250, 250);
+                    cubeContainer.appendChild(cubeRenderer.domElement);
+
+                    const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+                    const cubeMaterial = new THREE.MeshPhongMaterial({ color: 0x00ffff, shininess: 150, emissive: 0x00ffff, emissiveIntensity: 0.5 });
+                    const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+                    cubeScene.add(cube);
+                    const light = new THREE.PointLight(0xffffff, 1.5, 100);
+                    light.position.set(3, 3, 3);
+                    cubeScene.add(light);
+                    cubeCamera.position.z = 2.5;
+
+                    document.addEventListener('mousemove', (e) => {
+                        const mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+                        const mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+                        cube.rotation.x = mouseY * Math.PI * 1.5;
+                        cube.rotation.y = mouseX * Math.PI * 1.5;
+                    });
+
+                    function animateCube() {
+                        cube.rotation.x += 0.03;
+                        cube.rotation.y += 0.03;
+                        cubeMaterial.emissive.setHSL((Date.now() % 4000) / 4000, 1, 0.5);
+                        cubeRenderer.render(cubeScene, cubeCamera);
+                        requestAnimationFrame(animateCube);
+                    }
+                    animateCube();
+                }
+
+                // Частинки з шлейфом
+                const particles = new THREE.Group();
+                const particleCount = 100; // Збільшено кількість
+                const particleGeometry = new THREE.SphereGeometry(0.15, 16, 16);
+                const particleMaterial = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.7 });
+                const mouse = new THREE.Vector2(0, 0);
+
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+                    particle.position.set(
+                        (Math.random() - 0.5) * 60,
+                        (Math.random() - 0.5) * 60,
+                        (Math.random() - 0.5) * 60
+                    );
+                    particle.velocity = new THREE.Vector3(
+                        (Math.random() - 0.5) * 0.5,
+                        (Math.random() - 0.5) * 0.5,
+                        (Math.random() - 0.5) * 0.5
+                    );
+                    particles.add(particle);
+                }
+                scene.add(particles);
+                camera.position.z = 40;
+
+                document.addEventListener('mousemove', (e) => {
+                    mouse.x = (e.clientX / window.innerWidth - 0.5) * 60;
+                    mouse.y = -(e.clientY / window.innerHeight - 0.5) * 60;
+                });
+
+                function animateParticles() {
+                    particles.children.forEach(p => {
+                        const dx = mouse.x - p.position.x;
+                        const dy = mouse.y - p.position.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist > 0.2) {
+                            p.velocity.x += dx * 0.02;
+                            p.velocity.y += dy * 0.02;
+                            p.velocity.multiplyScalar(0.9);
+                        }
+                        p.position.add(p.velocity);
+                        p.material.color.setHSL((Date.now() % 4000) / 4000, 1, 0.5);
+                        p.material.opacity = 0.5 + 0.3 * Math.sin(Date.now() * 0.002 + p.position.x);
+                    });
+                    renderer.render(scene, camera);
+                    requestAnimationFrame(animateParticles);
+                }
+                animateParticles();
+
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            }
+        } catch (e) {
+            console.warn('Three.js initialization failed:', e);
+        }
+
+        // Гра на Canvas
+        const gameCanvas = getElement('game-canvas');
+        const gameModal = getElement('game-modal');
+        const playNowBtn = getElement('play-now');
+        const playDemoBtn = getElement('play-demo');
+        const closeGameBtn = getElement('close-game');
+
+        if (gameCanvas) {
+            const ctx = gameCanvas.getContext('2d');
+            gameCanvas.width = 800;
+            gameCanvas.height = 600;
+
+            let player = { x: 400, y: 500, width: 50, height: 50, speed: 5, shield: 0, boost: 0, hyperglow: false };
+            let obstacles = [];
+            let bonuses = [];
+            let ladders = [];
+            let score = 0;
+            let level = 1;
+            let gameRunning = false;
+            let particles = [];
+            const difficulty = 'normal'; // Фіксована складність, можна змінити на 'hard'
+
+            function spawnObstacle() {
+                const width = 50 + Math.random() * 100;
+                obstacles.push({
+                    x: Math.random() * (gameCanvas.width - width),
+                    y: -50,
+                    width: width,
+                    height: 50,
+                    speed: difficulty === 'hard' ? 5 + Math.random() * 3 : 3 + Math.random() * 2
+                });
+            }
+
+            function spawnBonus() {
+                const type = ['shield', 'boost', 'hyperglow'][Math.floor(Math.random() * 3)];
+                bonuses.push({
+                    x: Math.random() * (gameCanvas.width - 30),
+                    y: -30,
+                    width: 30,
+                    height: 30,
+                    type: type
+                });
+            }
+
+            function spawnLadder() {
+                ladders.push({
+                    x: Math.random() * (gameCanvas.width - 20),
+                    y: gameCanvas.height / 2,
+                    width: 20,
+                    height: 100
+                });
+            }
+
+            function spawnParticle(x, y) {
+                for (let i = 0; i < 20; i++) { // Збільшено кількість частинок
+                    particles.push({
+                        x: x,
+                        y: y,
+                        vx: (Math.random() - 0.5) * 6,
+                        vy: (Math.random() - 0.5) * 6,
+                        life: 40,
+                        color: ['#00ffff', '#ff00ff', '#00ffcc', '#ffcc00'][Math.floor(Math.random() * 4)]
+                    });
+                }
+            }
+
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                ctx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
+
+                // Сходинки
+                ctx.fillStyle = '#00ff00';
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = '#00ff00';
+                ladders.forEach(l => {
+                    ctx.fillRect(l.x, l.y, l.width, l.height);
+                });
+                ctx.shadowBlur = 0;
+
+                // Гравець
+                ctx.fillStyle = player.hyperglow ? '#ff00ff' : 'cyan';
+                ctx.shadowBlur = 30;
+                ctx.shadowColor = player.hyperglow ? '#ff00ff' : '#00ffff';
+                ctx.fillRect(player.x, player.y, player.width, player.height);
+                ctx.shadowBlur = 0;
+
+                // Перешкоди
+                ctx.fillStyle = '#ff00ff';
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = '#ff00ff';
+                obstacles.forEach(o => {
+                    ctx.fillRect(o.x, o.y, o.width, o.height);
+                });
+
+                // Бонуси
+                bonuses.forEach(b => {
+                    ctx.fillStyle = b.type === 'shield' ? '#00ffcc' : b.type === 'boost' ? '#ffcc00' : '#ff00ff';
+                    ctx.shadowColor = ctx.fillStyle;
+                    ctx.fillRect(b.x, b.y, b.width, b.height);
+                });
+                ctx.shadowBlur = 0;
+
+                // Частинки
+                particles.forEach(p => {
+                    ctx.fillStyle = p.color;
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = p.color;
+                    ctx.fillRect(p.x, p.y, 6, 6);
+                    ctx.shadowBlur = 0;
+                });
+
+                // Інформація
+                ctx.fillStyle = '#fff';
+                ctx.font = '28px Russo One';
+                ctx.textAlign = 'left';
+                ctx.fillText(`Рівень: ${level} | Очки: ${score}`, 20, 30);
+                ctx.fillText(`Щит: ${player.shield} | Прискорення: ${player.boost}`, 20, 60);
+            }
+
+            function update() {
+                if (!gameRunning) return;
+
+                // Рух гравця
+                const currentSpeed = player.boost > 0 ? player.speed * 2 : player.speed;
+                if (keys['ArrowLeft'] || keys['a']) player.x -= currentSpeed;
+                if (keys['ArrowRight'] || keys['d']) player.x += currentSpeed;
+                let onLadder = ladders.some(l => player.x < l.x + l.width && player.x + player.width > l.x && player.y < l.y + l.height && player.y + player.height > l.y);
+                if ((keys['ArrowUp'] || keys['w']) && onLadder) player.y -= currentSpeed;
+                if ((keys['ArrowDown'] || keys['s']) && onLadder) player.y += currentSpeed;
+                if (player.x < 0) player.x = 0;
+                if (player.x > gameCanvas.width - player.width) player.x = gameCanvas.width - player.width;
+                if (player.y < 0) player.y = 0;
+                if (player.y > gameCanvas.height - player.height) player.y = gameCanvas.height - player.height;
+
+                // Оновлення перешкод
+                obstacles.forEach(o => {
+                    o.y += o.speed;
+                });
+                obstacles = obstacles.filter(o => o.y < gameCanvas.height);
+
+                // Оновлення бонусів
+                bonuses.forEach(b => {
+                    b.y += 2;
+                });
+                bonuses = bonuses.filter(b => b.y < gameCanvas.height);
+
+                // Оновлення частинок
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.life--;
+                });
+                particles = particles.filter(p => p.life > 0);
+
+                // Колізії з перешкодами
+                obstacles.forEach(o => {
+                    if (
+                        player.x < o.x + o.width &&
+                        player.x + player.width > o.x &&
+                        player.y < o.y + o.height &&
+                        player.y + player.height > o.y
+                    ) {
+                        if (player.shield > 0) {
+                            player.shield--;
+                            obstacles = obstacles.filter(obs => obs !== o);
+                            spawnParticle(o.x + o.width / 2, o.y + o.height / 2);
+                        } else if (player.hyperglow) {
+                            obstacles = obstacles.filter(obs => obs !== o);
+                            spawnParticle(o.x + o.width / 2, o.y + o.height / 2);
+                        } else {
+                            gameRunning = false;
+                            ctx.fillStyle = '#fff';
+                            ctx.font = '48px Russo One';
+                            ctx.textAlign = 'center';
+                            ctx.fillText(`Гру закінчено! Рівень: ${level} | Очки: ${score}`, gameCanvas.width / 2, gameCanvas.height / 2);
+                        }
+                    }
+                });
+
+                // Колізії з бонусами
+                bonuses.forEach(b => {
+                    if (
+                        player.x < b.x + b.width &&
+                        player.x + player.width > b.x &&
+                        player.y < b.y + b.height &&
+                        player.y + player.height > b.y
+                    ) {
+                        if (b.type === 'shield') player.shield++;
+                        if (b.type === 'boost') player.boost = 300;
+                        if (b.type === 'hyperglow') {
+                            player.hyperglow = true;
+                            setTimeout(() => player.hyperglow = false, 5000);
+                        }
+                        bonuses = bonuses.filter(bonus => bonus !== b);
+                        spawnParticle(b.x + b.width / 2, b.y + b.height / 2);
+                    }
+                });
+
+                // Оновлення бонусів
+                if (player.boost > 0) player.boost--;
+
+                // Перехід на новий рівень
+                if (score > level * 1000) {
+                    level++;
+                    obstacles = [];
+                    bonuses = [];
+                    ladders = [];
+                    spawnLadder();
+                }
+
+                // Спавн об’єктів
+                if (Math.random() < (difficulty === 'hard' ? 0.05 : 0.02)) spawnObstacle();
+                if (Math.random() < 0.015) spawnBonus();
+                if (ladders.length === 0 && Math.random() < 0.01) spawnLadder();
+
+                // Нарахування очок
+                score++;
+
+                draw();
+                requestAnimationFrame(update);
+            }
+
+            let keys = {};
+            document.addEventListener('keydown', (e) => {
+                if (e.key) keys[e.key] = true;
+            });
+            document.addEventListener('keyup', (e) => {
+                if (e.key) keys[e.key] = false;
+            });
+
+            if (playNowBtn) {
+                playNowBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    try {
+                        window.location.href = 'brixdash://play';
+                        setTimeout(() => {
+                            const gameError = getElement('game-error');
+                            if (gameError) gameError.style.display = 'block';
+                        }, 1000);
+                    } catch (err) {
+                        console.warn('Failed to launch game:', err);
+                        const gameError = getElement('game-error');
+                        if (gameError) gameError.style.display = 'block';
+                    }
+                });
+            }
+
+            if (playDemoBtn) {
+                playDemoBtn.addEventListener('click', () => {
+                    if (gameModal) {
+                        gameModal.classList.add('active');
+                        gameRunning = true;
+                        score = 0;
+                        level = 1;
+                        player = { x: 400, y: 500, width: 50, height: 50, speed: 5, shield: 0, boost: 0, hyperglow: false };
+                        obstacles = [];
+                        bonuses = [];
+                        ladders = [];
+                        spawnLadder();
+                        update();
+                    }
+                });
+            }
+
+            if (closeGameBtn) {
+                closeGameBtn.addEventListener('click', () => {
+                    if (gameModal) {
+                        gameModal.classList.remove('active');
+                        gameRunning = false;
+                    }
+                });
+            }
+        }
+
+        // Звукові ефекти
+        const soundHover = new Audio('https://cdn.example.com/sounds/select.wav'); // Замініть на реальний шлях
+        soundHover.volume = 0.3;
+        document.querySelectorAll('nav a, .btn, .btn-mini').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                soundHover.currentTime = 0;
+                soundHover.play().catch(e => console.warn('Sound error:', e));
+            });
+        });
+
+        // Анімація секцій
+        const sections = document.querySelectorAll('section');
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) e.target.classList.add('visible');
+            });
+        }, { threshold: 0.2 });
+        sections.forEach(s => observer.observe(s));
+
+        // Навігація
+        const navLinks = document.querySelectorAll('nav a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                const targetId = link.dataset && link.dataset.target;
+                const target = targetId ? getElement(targetId) : null;
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
